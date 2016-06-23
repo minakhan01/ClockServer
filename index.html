@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sample Site</title>
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <style>
+        body { padding-top:50px; }
+    </style>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">  </script>
+     <script>
+    //   $(document).ready(function(){
+    //     var deviceIdValue;
+    //     $("#submit").click(function(){
+    //       deviceIdValue = $("#deviceId").val();
+    //       $.post("http://localhost:3030/",{deviceId: deviceIdValue}, function(data){
+    //         if(data==='done')
+    //           {
+    //             alert("login success");
+    //           }
+    //       });
+    //     });
+    //   });
+     </script>
+</head>
+<body>
+
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Enter device name:</h1>
+            <input type="TEXT" id="deviceId" size="40">
+            <button id="submit" value="Submit">Submit</button>
+<script type="text/javascript">
+    document.getElementById("submit").onclick = function () {
+        location.href = "deviceId/:"+$("#deviceId").val();
+    };
+</script>
+        </div>
+    </div>
+    
+</body>
+</html>
