@@ -66,6 +66,20 @@ app.get('/getCalendarEvents:id', function(req, res) {
 	});
 });
 
+// respond with "hello world" when a GET request is made to the homepage
+app.get('/addCalendarEvents/:id/:eventTime/:eventType', function(req, res) {
+	// myFirebaseRef = new Firebase("https://lightupmeetings.firebaseio.com/");
+	console.log(req.params.eventTime);
+	// myFirebaseRef = new Firebase("https://lightupmeetings.firebaseio.com/");
+	ref.orderByKey().equalTo(req.params.id).once("value", function(snapshot) {
+			snapshot.forEach(function(data) {
+				console.log("The device " + data.key + " token is " + data.val());
+				oauth2Client.credentials = data.val();
+				addEvent(oauth2Client, parseInt(req.params.eventTime), req.params.eventType);
+			});
+	});
+});
+
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
@@ -87,7 +101,7 @@ var ref = db.ref("tokens");
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
-var SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
+var SCOPES = ['https://www.googleapis.com/auth/calendar'];
 
 // instruct the app to use the `bodyParser()` middleware for all routes
 app.use(bodyParser());
@@ -145,13 +159,47 @@ function setTokenForDevice(deviceId, token) {
 	ref.child(deviceId).set(token);
 }
 
+function addEvent(auth, eventTime, eventType) {
+	console.log("add event start");
+	var timeZero = new Date();
+	timeZero.setHours(0,0,0,0);
+	var startTime = new Date(timeZero.getTime() + (eventTime * 60 * 60 * 1000));
+	var startTimeString = startTime.toISOString();
+	// 59 minute meetings
+	var endTime = new Date(timeZero.getTime() + ((eventTime + 1) * 60 * 60 * 1000 - 6000));
+	var endTimeString = endTime.toISOString();
+	console.log("startTime: "+ startTimeString);
+	console.log("endTime: "+endTimeString);
+	var event = {
+		'summary': eventType,
+		'start': {
+		'dateTime': startTimeString,
+		'timeZone': 'America/Los_Angeles',
+		},
+		'end': {
+		'dateTime': endTimeString,
+		'timeZone': 'America/Los_Angeles',
+		},
+	};
+
+	calendar.events.insert({
+	auth: auth,
+	calendarId: 'primary',
+	resource: event,
+	}, function(err, event) {
+	if (err) {
+	console.log('There was an error contacting the Calendar service: ' + err);
+	return;
+	}
+	console.log('Event created: %s', event.htmlLink);
+	});
+}
+
 /**
- * Lists the next 10 events on the user's primary calendar.
- *
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 function listEvents(auth, res) {
-  var calendar = google.calendar('v3');
+  calendar = google.calendar('v3');
   var today = new Date();
   today.setHours(0,0,0,0);
   var todayString = today.toISOString();
