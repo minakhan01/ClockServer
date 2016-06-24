@@ -160,6 +160,7 @@ function setTokenForDevice(deviceId, token) {
 }
 
 function addEvent(auth, eventTime, eventType) {
+	var calendar = google.calendar('v3');
 	console.log("add event start");
 	var timeZero = new Date();
 	timeZero.setHours(0,0,0,0);
@@ -199,7 +200,7 @@ function addEvent(auth, eventTime, eventType) {
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 function listEvents(auth, res) {
-  calendar = google.calendar('v3');
+  var calendar = google.calendar('v3');
   var today = new Date();
   today.setHours(0,0,0,0);
   var todayString = today.toISOString();
